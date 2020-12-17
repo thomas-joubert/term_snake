@@ -50,32 +50,24 @@ int main (void)
         FD_ZERO(&fds);
         FD_SET(0, &fds);
         timeout.tv_sec = 0;
-        timeout.tv_usec = 25000;
+        timeout.tv_usec = 500000;
 
         int rdy = select(1, &fds, NULL, NULL, &timeout);
 
         if (rdy)
         {
-            puts("INPUT");
             int count = read(STDIN_FILENO, &direction, 1);
-            if (!count)
-                direction = 0;
-            else if (count == -1)
+            if (count == -1)
             {
                 perror("Error while reading on stdin");
                 return 2;
             }
         }
-        else
-            puts("nothing was entered");
 
-        puts("nothing was entered");
+        usleep(timeout.tv_usec);
 
         if (direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
-        {
-            puts("MOVE");
             alive = move(board, direction, &head);
-        }
         else if (direction == ESC)
         {
             puts("\nYou pressed ESC, thanks for playing !");
@@ -83,13 +75,13 @@ int main (void)
             break;
         }
 
+        draw_board(board);
+
         if (alive == 0)
         {
             puts("You died, how sad...");
             break;
         }
-
-        draw_board(board);
     }
 
     return 0;

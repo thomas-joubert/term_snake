@@ -43,28 +43,28 @@ int move(int board[14][27], char direction, struct point *head)
     switch (direction)
     {
         case UP:
-            if (!(alive = head->x == 13 ? 0 : 1))
-            {
-                board[head->x][head->y] = EMPTY;
-                board[++(head->x)][head->y] = HEAD;
-            }
-            break;
-        case DOWN:
-            if (!(alive = head->x == 0 ? 0 : 1))
+            if ((alive = head->x == 0 ? 0 : 1))
             {
                 board[head->x][head->y] = EMPTY;
                 board[--(head->x)][head->y] = HEAD;
             }
             break;
+        case DOWN:
+            if ((alive = head->x == 13 ? 0 : 1))
+            {
+                board[head->x][head->y] = EMPTY;
+                board[++(head->x)][head->y] = HEAD;
+            }
+            break;
         case RIGHT:
-            if (!(alive = head->y == 26 ? 0 : 1))
+            if ((alive = head->y == 26 ? 0 : 1))
             {
                 board[head->x][head->y] = EMPTY;
                 board[head->x][++(head->y)] = HEAD;
             }
             break;
         case LEFT:
-            if (!(alive = head->y == 0 ? 0 : 1))
+            if ((alive = head->y == 0 ? 0 : 1))
             {
                 board[head->x][head->y] = EMPTY;
                 board[head->x][--(head->y)] = HEAD;
