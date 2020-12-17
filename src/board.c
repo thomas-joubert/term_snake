@@ -48,6 +48,11 @@ int move(int board[14][27], char direction, struct point *head)
             if ((alive = head->x == 0 ? 0 : 1))
             {
                 board[head->x][head->y] = EMPTY;
+                if (board[(head->x) - 1][head->y] == CHERRY)
+                {
+                    //add_ring(board, head);
+                    spawn_cherry(board);
+                }
                 board[--(head->x)][head->y] = HEAD;
             }
             break;
@@ -55,6 +60,11 @@ int move(int board[14][27], char direction, struct point *head)
             if ((alive = head->x == 13 ? 0 : 1))
             {
                 board[head->x][head->y] = EMPTY;
+                if (board[(head->x) + 1][head->y] == CHERRY)
+                {
+                    //add_ring(board, head);
+                    spawn_cherry(board);
+                }
                 board[++(head->x)][head->y] = HEAD;
             }
             break;
@@ -62,6 +72,11 @@ int move(int board[14][27], char direction, struct point *head)
             if ((alive = head->y == 26 ? 0 : 1))
             {
                 board[head->x][head->y] = EMPTY;
+                if (board[head->x][(head->y) + 1] == CHERRY)
+                {
+                    //add_ring(board, head);
+                    spawn_cherry(board);
+                }
                 board[head->x][++(head->y)] = HEAD;
             }
             break;
@@ -69,6 +84,11 @@ int move(int board[14][27], char direction, struct point *head)
             if ((alive = head->y == 0 ? 0 : 1))
             {
                 board[head->x][head->y] = EMPTY;
+                if (board[head->x][(head->y) - 1] == CHERRY)
+                {
+                    //add_ring(board, head);
+                    spawn_cherry(board);
+                }
                 board[head->x][--(head->y)] = HEAD;
             }
             break;
