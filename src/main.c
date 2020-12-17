@@ -37,6 +37,7 @@ int main (void)
     }
 
     init_board(board);
+    spawn_cherry(board);
 
     term_options.c_lflag &= ~(ICANON|ECHO);
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &term_options);

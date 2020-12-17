@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "board.h"
 
@@ -73,4 +75,20 @@ int move(int board[14][27], char direction, struct point *head)
     }
 
     return alive;
+}
+
+void spawn_cherry(int board[14][27])
+{
+    srand(time(NULL));
+
+    int row = rand() % 13;
+    int column = rand() % 26;
+
+    while(board[row][column] != EMPTY)
+    {
+        row = rand() % 13;
+        column = rand() % 26;
+    }
+
+    board[row][column] = CHERRY;
 }
