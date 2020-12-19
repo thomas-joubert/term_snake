@@ -16,6 +16,8 @@ int main (void)
     struct termios term_former;
 
     char direction = 0;
+    // The snake is starting with its tail on the left
+    char prev_direction = 'q';
     int alive = 1;
 
     struct timeval timeout;
@@ -57,6 +59,7 @@ int main (void)
 
         if (rdy)
         {
+            prev_direction = direction;
             int count = read(STDIN_FILENO, &direction, 1);
             if (count == -1)
             {
@@ -68,7 +71,16 @@ int main (void)
         usleep(timeout.tv_usec);
 
         if (direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
+        {
+            // prevent from going backward
+            if ((direction == UP && prev_direction == DOWN)
+                    || (direction == DOWN && prev_direction == UP)
+                    || (direction == RIGHT && prev_direction == LEFT)
+                    || (direction == LEFT && prev_direction == RIGHT))
+                direction = prev_direction;
+
             alive = move(board, direction, &head);
+        }
         else if (direction == ESC)
         {
             puts("\nYou pressed ESC, thanks for playing !");
@@ -76,13 +88,16 @@ int main (void)
             break;
         }
 
-        draw_board(board);
-
         if (alive == 0)
         {
             puts("You died, how sad...");
             break;
         }
+        else
+        {
+            draw_board(board);
+        }
+
     }
 
     return 0;

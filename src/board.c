@@ -21,7 +21,7 @@ void draw_board(int board[14][27])
                 case CHERRY:
                     printf("*");
                     break;
-                case PLAYER :
+                case BODY :
                     printf("o");
                     break;
                 case HEAD :
@@ -37,6 +37,7 @@ void draw_board(int board[14][27])
 void init_board(int board[14][27])
 {
     board[7][13] = HEAD;
+    board[7][14] = BODY;
 }
 
 int move(int board[14][27], char direction, struct point *head)
@@ -50,9 +51,11 @@ int move(int board[14][27], char direction, struct point *head)
                 board[head->x][head->y] = EMPTY;
                 if (board[(head->x) - 1][head->y] == CHERRY)
                 {
-                    //add_ring(board, head);
+                    add_ring(board, *head, direction);
                     spawn_cherry(board);
                 }
+                if (board[head->x - 1][head->y] == BODY)
+                    return 0;
                 board[--(head->x)][head->y] = HEAD;
             }
             break;
@@ -62,9 +65,11 @@ int move(int board[14][27], char direction, struct point *head)
                 board[head->x][head->y] = EMPTY;
                 if (board[(head->x) + 1][head->y] == CHERRY)
                 {
-                    //add_ring(board, head);
+                    add_ring(board, *head, direction);
                     spawn_cherry(board);
                 }
+                if (board[head->x + 1][head->y] == BODY)
+                    return 0;
                 board[++(head->x)][head->y] = HEAD;
             }
             break;
@@ -74,9 +79,11 @@ int move(int board[14][27], char direction, struct point *head)
                 board[head->x][head->y] = EMPTY;
                 if (board[head->x][(head->y) + 1] == CHERRY)
                 {
-                    //add_ring(board, head);
+                    add_ring(board, *head, direction);
                     spawn_cherry(board);
                 }
+                if (board[head->x][head->y + 1] == BODY)
+                    return 0;
                 board[head->x][++(head->y)] = HEAD;
             }
             break;
@@ -86,9 +93,11 @@ int move(int board[14][27], char direction, struct point *head)
                 board[head->x][head->y] = EMPTY;
                 if (board[head->x][(head->y) - 1] == CHERRY)
                 {
-                    //add_ring(board, head);
+                    add_ring(board, *head, direction);
                     spawn_cherry(board);
                 }
+                if (board[head->x][head->y - 1] == BODY)
+                    return 0;
                 board[head->x][--(head->y)] = HEAD;
             }
             break;
@@ -111,4 +120,52 @@ void spawn_cherry(int board[14][27])
     }
 
     board[row][column] = CHERRY;
+}
+
+void add_ring(int board[14][27], struct point head, char dir)
+{
+    int x_curr = head.x;
+    int y_curr = head.y;
+
+    int x_prev = x_curr;
+    int y_prev = y_curr;
+
+    char direction = dir;
+
+    while(1)
+    {
+        if (board[x_curr + 1][y_curr] == BODY && x_curr + 1 != x_prev)
+        {
+            direction = DOWN;
+            x_prev = x_curr++;
+        }
+        else if (board[x_curr - 1][y_curr] == BODY && x_curr - 1 != x_prev)
+        {
+            direction = UP;
+            x_prev = x_curr--;
+        }
+        else if (board[x_curr][y_curr + 1] == BODY && y_curr + 1 != y_prev)
+        {
+            direction = RIGHT;
+            y_prev = y_curr++;
+        }
+        else if (board[x_curr][y_curr - 1] == BODY && y_curr - 1 != y_prev)
+        {
+            direction = LEFT;
+            y_prev = y_curr--;
+        }
+        else
+        {
+            if (direction == UP)
+                board[x_curr - 1][y_curr] = BODY;
+            else if (direction == DOWN)
+                board[x_curr + 1][y_curr] = BODY;
+            else if (direction == RIGHT)
+                board[x_curr][y_curr + 1] = BODY;
+            else if (direction == LEFT)
+                board[x_curr][y_curr - 1] = BODY;
+
+            break;
+        }
+    }
 }
