@@ -21,8 +21,9 @@ void draw_board(int board[14][27]);
 void init_board(int board[14][27]);
 
 void spawn_cherry(int board[14][27]);
-void add_ring(int board[14][27], struct point head, char dir);
+void add_ring(int board[14][27], struct point tail);
 
 int move(int board[14][27], char direction, struct point *head);
+struct point move_body(int board[14][27], struct point head, char direction);
 
 #endif // end of board.h
