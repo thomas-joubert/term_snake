@@ -3,14 +3,18 @@
 #include <termios.h>
 #include <sys/select.h>
 #include <sys/time.h>
+#include <stdlib.h>
 
 #include "keyboard.h"
 #include "board.h"
+#include "snake.h"
 
 int main (void)
 {
     fd_set fds;
-    int board[14][27] = { 0 };
+    int board[BOARD_SIZE][BOARD_SIZE] = { 0 };
+    struct body *head = init_snake(7, 13);
+    struct point *cherry = calloc(1, sizeof(struct point));
 
     struct termios term_options;
     struct termios term_former;
@@ -21,10 +25,6 @@ int main (void)
     int alive = 1;
 
     struct timeval timeout;
-
-    struct point head;
-    head.x = 7;
-    head.y = 13;
 
     if (tcgetattr(1, &term_options) == -1)
     {
@@ -38,8 +38,8 @@ int main (void)
         return 2;
     }
 
-    init_board(board);
-    spawn_cherry(board);
+    spawn_cherry(head, cherry);
+    draw_board(board, head, cherry);
 
     term_options.c_lflag &= ~(ICANON|ECHO);
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &term_options);
@@ -79,7 +79,7 @@ int main (void)
                     || (direction == LEFT && prev_direction == RIGHT))
                 direction = prev_direction;
 
-            alive = move(board, direction, &head);
+            alive = move(board, direction, head, cherry);
         }
         else if (direction == ESC)
         {
@@ -94,11 +94,12 @@ int main (void)
             break;
         }
         else
-        {
-            draw_board(board);
-        }
+            draw_board(board, head, cherry);
 
     }
+
+    free_snake(head);
+    free(cherry);
 
     return 0;
 }

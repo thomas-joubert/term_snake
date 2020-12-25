@@ -2,6 +2,9 @@
 #define DEF_BOARD
 
 #include "keyboard.h"
+#include "snake.h"
+
+#define BOARD_SIZE 17
 
 enum board
 {
@@ -17,13 +20,13 @@ struct point
     int y;
 };
 
-void draw_board(int board[14][27]);
-void init_board(int board[14][27]);
+void draw_board(int board[BOARD_SIZE][BOARD_SIZE], struct body *head, struct point *cherry);
+void init_board(int board[BOARD_SIZE][BOARD_SIZE]);
 
-void spawn_cherry(int board[14][27]);
-void add_ring(int board[14][27], struct point tail);
+void spawn_cherry(struct body *head, struct point *cherry);
+void add_ring(struct body *head);
 
-int move(int board[14][27], char direction, struct point *head);
-struct point move_body(int board[14][27], struct point head, char direction);
+int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, struct point *cherry);
+void move_body(struct body *head, char direction);
 
 #endif // end of board.h
