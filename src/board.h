@@ -6,9 +6,9 @@
 enum board
 {
     EMPTY = 0,
-    CHERRY,
-    BODY,
-    HEAD
+    CHERRY = 1,
+    BODY = 2,
+    HEAD = 3
 };
 
 struct point

@@ -48,42 +48,35 @@ struct point move_body(int board[14][27], struct point head, char direction)
     int x_prev = x_curr;
     int y_prev = y_curr;
 
-    if (direction == UP)
-        x_prev++;
-    else if (direction == DOWN)
-        x_prev--;
-    else if (direction == RIGHT)
-        y_prev--;
-    else if (direction == LEFT)
-        y_prev++;
-
     while(1)
     {
-        board[x_curr][y_curr] = board[x_prev][y_prev];
-
-        if (board[x_curr + 1][y_curr] == BODY)
-        {
-            direction = DOWN;
-            x_prev = x_curr++;
-        }
-        else if (board[x_curr - 1][y_curr] == BODY)
+        if (x_curr < 13 && board[x_curr + 1][y_curr] == BODY && direction != DOWN)
         {
             direction = UP;
+            x_prev = x_curr++;
+        }
+        else if (x_curr > 0 && board[x_curr - 1][y_curr] == BODY && direction != UP)
+        {
+            direction = DOWN;
             x_prev = x_curr--;
         }
-        else if (board[x_curr][y_curr + 1] == BODY)
-        {
-            direction = RIGHT;
-            y_prev = y_curr++;
-        }
-        else if (board[x_curr][y_curr - 1] == BODY)
+        else if (y_curr < 26 && board[x_curr][y_curr + 1] == BODY && direction != RIGHT)
         {
             direction = LEFT;
+            y_prev = y_curr++;
+        }
+        else if (y_curr > 0 && board[x_curr][y_curr - 1] == BODY && direction != LEFT)
+        {
+            direction = RIGHT;
             y_prev = y_curr--;
         }
         else
             break;
+
+        board[x_curr][y_curr] = board[x_prev][y_prev];
     }
+
+    board[x_curr][y_curr] = EMPTY;
 
     struct point tail;
     tail.x = x_curr;
@@ -104,13 +97,13 @@ int move(int board[14][27], char direction, struct point *head)
         case UP:
             if ((alive = head->x == 0 ? 0 : 1))
             {
-                board[head->x][head->y] = EMPTY;
+                board[head->x][head->y] = BODY;
                 cherry = board[head->x - 1][head->y] == CHERRY;
 
                 if (board[head->x - 1][head->y] == BODY)
                     return 0;
 
-                board[--(head->x)][head->y] = HEAD;
+                board[head->x - 1][head->y] = HEAD;
 
                 tail = move_body(board, *head, direction);
                 if (cherry)
@@ -118,18 +111,20 @@ int move(int board[14][27], char direction, struct point *head)
                     add_ring(board, tail);
                     spawn_cherry(board);
                 }
+
+                head->x--;
             }
             break;
         case DOWN:
             if ((alive = head->x == 13 ? 0 : 1))
             {
-                board[head->x][head->y] = EMPTY;
+                board[head->x][head->y] = BODY;
                 cherry = board[head->x + 1][head->y] == CHERRY;
 
                 if (board[head->x + 1][head->y] == BODY)
                     return 0;
 
-                board[++(head->x)][head->y] = HEAD;
+                board[head->x + 1][head->y] = HEAD;
 
                 tail = move_body(board, *head, direction);
 
@@ -138,18 +133,19 @@ int move(int board[14][27], char direction, struct point *head)
                     add_ring(board, tail);
                     spawn_cherry(board);
                 }
+                head->x++;
             }
             break;
         case RIGHT:
             if ((alive = head->y == 26 ? 0 : 1))
             {
-                board[head->x][head->y] = EMPTY;
+                board[head->x][head->y] = BODY;
                 cherry = board[head->x][head->y + 1] == CHERRY;
 
                 if (board[head->x][head->y + 1] == BODY)
                     return 0;
 
-                board[head->x][++(head->y)] = HEAD;
+                board[head->x][head->y + 1] = HEAD;
 
                 tail = move_body(board, *head, direction);
 
@@ -158,18 +154,19 @@ int move(int board[14][27], char direction, struct point *head)
                     add_ring(board, tail);
                     spawn_cherry(board);
                 }
+                head->y++;
             }
             break;
         case LEFT:
             if ((alive = head->y == 0 ? 0 : 1))
             {
-                board[head->x][head->y] = EMPTY;
+                board[head->x][head->y] = BODY;
                 cherry = board[head->x][head->y - 1] == CHERRY;
 
                 if (board[head->x][head->y - 1] == BODY)
                     return 0;
 
-                board[head->x][--(head->y)] = HEAD;
+                board[head->x][head->y - 1] = HEAD;
 
                 tail = move_body(board, *head, direction);
 
@@ -178,6 +175,7 @@ int move(int board[14][27], char direction, struct point *head)
                     add_ring(board, tail);
                     spawn_cherry(board);
                 }
+                head->y--;
             }
             break;
     }
@@ -205,30 +203,5 @@ void spawn_cherry(int board[14][27])
 // TODO : Handle when at stick a the side of the board
 void add_ring(int board[14][27], struct point tail)
 {
-    int x_pre_tail = tail.x;
-    int y_pre_tail = tail.y;
-
-    if (board[x_pre_tail - 1][y_pre_tail] == BODY)
-        x_pre_tail -= 2;
-    else if (board[x_pre_tail + 1][y_pre_tail] == BODY)
-        x_pre_tail += 2;
-    else if (board[x_pre_tail][y_pre_tail - 1] == BODY)
-        y_pre_tail -= 2;
-    else if (board[x_pre_tail][y_pre_tail + 1] == BODY)
-        y_pre_tail += 2;
-
-    if (x_pre_tail == 15)
-    {
-        x_pre_tail = 13;
-        y_pre_tail--;
-    }
-
-    if (x_pre_tail == 28)
-    {
-        y_pre_tail = 26;
-        x_pre_tail--;
-    }
-
-    board[x_pre_tail][y_pre_tail] = BODY;
-
+    board[tail.x][tail.y] = BODY;
 }
