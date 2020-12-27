@@ -10,5 +10,6 @@ struct body
 
 struct body *init_snake(int x, int y);
 void free_snake(struct body *head);
+void add_ring(struct body *head);
 
 #endif // end of snake.h
