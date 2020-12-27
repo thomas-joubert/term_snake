@@ -24,7 +24,6 @@ void draw_board(int board[BOARD_SIZE][BOARD_SIZE], struct body *head, struct poi
 void init_board(int board[BOARD_SIZE][BOARD_SIZE]);
 
 void spawn_cherry(struct body *head, struct point *cherry);
-void add_ring(struct body *head);
 
 int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, struct point *cherry);
 void move_body(struct body *head, char direction);

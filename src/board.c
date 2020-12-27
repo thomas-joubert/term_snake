@@ -22,7 +22,7 @@ static void update_board(int board[BOARD_SIZE][BOARD_SIZE], struct body *head, s
 
     struct body *curr = head->next;
 
-    while(curr->next)
+    while(curr)
     {
         board[curr->x][curr->y] = BODY;
         curr = curr->next;
@@ -87,7 +87,7 @@ void move_body(struct body *head, char direction)
     int x_curr = head->x;
     int y_curr = head->y;
     struct body *curr = head->next;
-    while(curr->next)
+    while(curr)
     {
         int x_tmp = curr->x;
         int y_tmp = curr->y;
@@ -97,6 +97,8 @@ void move_body(struct body *head, char direction)
 
         x_curr = x_tmp;
         y_curr = y_tmp;
+
+        curr = curr->next;
     }
 
     head->x += inc_x;
@@ -127,8 +129,6 @@ int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, s
                     add_ring(head);
                     spawn_cherry(head, cherry);
                 }
-
-                head->x--;
             }
             break;
         case DOWN:
@@ -149,7 +149,6 @@ int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, s
                     add_ring(head);
                     spawn_cherry(head, cherry);
                 }
-                head->x++;
             }
             break;
         case RIGHT:
@@ -170,7 +169,6 @@ int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, s
                     add_ring(head);
                     spawn_cherry(head, cherry);
                 }
-                head->y++;
             }
             break;
         case LEFT:
@@ -191,7 +189,6 @@ int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, s
                     add_ring(head);
                     spawn_cherry(head, cherry);
                 }
-                head->y--;
             }
             break;
     }
@@ -225,29 +222,4 @@ void spawn_cherry(struct body *head, struct point *cherry)
 
     cherry->x = row;
     cherry->y = column;
-}
-
-
-// TODO : Handle when at stick a the side of the board
-void add_ring(struct body *head)
-{
-    struct body *curr = head->next;
-    for (; curr->next->next != NULL; curr = curr->next);
-
-    // To guess the direction and where the next ring should spawn
-    int x_prev = curr->x;
-    int y_prev = curr->y;
-
-    curr = curr->next;
-    int x_curr = curr->x;
-    int y_curr = curr->y;
-
-    int modif_x = x_curr == 16;
-    int modif_y = 0;
-    if (!modif_x)
-        modif_y = y_curr == 16;
-
-    struct body * new_ring = calloc(1, sizeof(struct body));
-    new_ring->x = x_curr + (x_prev - x_prev) - modif_x;
-    new_ring->y = y_curr + (y_prev - y_prev) - modif_y;
 }
