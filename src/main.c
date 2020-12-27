@@ -9,6 +9,33 @@
 #include "board.h"
 #include "snake.h"
 
+char get_input(fd_set *fds, struct timeval timeout, char *direction)
+{
+    char prev_direction = 0;
+
+    FD_ZERO(fds);
+    FD_SET(0, fds);
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 500000;
+
+    int rdy = select(1, fds, NULL, NULL, &timeout);
+
+    if (rdy)
+    {
+        prev_direction = *direction;
+        int count = read(STDIN_FILENO, direction, 1);
+        if (count == -1)
+        {
+            perror("Error while reading on stdin");
+            return 2;
+        }
+    }
+
+    usleep(timeout.tv_usec);
+
+    return prev_direction;
+}
+
 int main (void)
 {
     fd_set fds;
@@ -50,25 +77,7 @@ int main (void)
 
     while (1)
     {
-        FD_ZERO(&fds);
-        FD_SET(0, &fds);
-        timeout.tv_sec = 0;
-        timeout.tv_usec = 500000;
-
-        int rdy = select(1, &fds, NULL, NULL, &timeout);
-
-        if (rdy)
-        {
-            prev_direction = direction;
-            int count = read(STDIN_FILENO, &direction, 1);
-            if (count == -1)
-            {
-                perror("Error while reading on stdin");
-                return 2;
-            }
-        }
-
-        usleep(timeout.tv_usec);
+        prev_direction = get_input(&fds, timeout, &direction);
 
         if (direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
         {
@@ -95,7 +104,6 @@ int main (void)
         }
         else
             draw_board(board, head, cherry);
-
     }
 
     free_snake(head);
