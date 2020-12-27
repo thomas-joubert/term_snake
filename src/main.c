@@ -9,14 +9,15 @@
 #include "board.h"
 #include "snake.h"
 
-char get_input(fd_set *fds, struct timeval timeout, char *direction)
+char get_input(fd_set *fds, char *direction)
 {
     char prev_direction = 0;
 
     FD_ZERO(fds);
     FD_SET(0, fds);
+    struct timeval timeout;
     timeout.tv_sec = 0;
-    timeout.tv_usec = 500000;
+    timeout.tv_usec = 400000;
 
     int rdy = select(1, fds, NULL, NULL, &timeout);
 
@@ -40,6 +41,7 @@ int main (void)
 {
     fd_set fds;
     int board[BOARD_SIZE][BOARD_SIZE] = { 0 };
+
     struct body *head = init_snake(7, 13);
     struct point *cherry = calloc(1, sizeof(struct point));
 
@@ -51,7 +53,6 @@ int main (void)
     char prev_direction = 'q';
     int alive = 1;
 
-    struct timeval timeout;
 
     if (tcgetattr(1, &term_options) == -1)
     {
@@ -77,7 +78,7 @@ int main (void)
 
     while (1)
     {
-        prev_direction = get_input(&fds, timeout, &direction);
+        prev_direction = get_input(&fds, &direction);
 
         if (direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
         {
