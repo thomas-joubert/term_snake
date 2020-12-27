@@ -8,6 +8,7 @@
 #include "keyboard.h"
 #include "board.h"
 #include "snake.h"
+#include "score.h"
 
 char get_input(fd_set *fds, char *direction)
 {
