@@ -36,7 +36,7 @@ void draw_board(int board[BOARD_SIZE][BOARD_SIZE], struct body *head, struct poi
     update_board(board, head, cherry);
 
     printf("\033[2J\033[1;1H");
-    puts("-----------------");
+    puts("-------------------");
     for (int i = 0; i < BOARD_SIZE; i++)
     {
         printf("|");
@@ -60,7 +60,7 @@ void draw_board(int board[BOARD_SIZE][BOARD_SIZE], struct body *head, struct poi
         }
         printf("|\n");
     }
-    puts("----------------");
+    puts("-------------------");
 }
 
 void move_body(struct body *head, char direction)
