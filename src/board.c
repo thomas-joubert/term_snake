@@ -4,6 +4,7 @@
 
 #include "board.h"
 #include "snake.h"
+#include "score.h"
 
 static void reset(int board[BOARD_SIZE][BOARD_SIZE])
 {
@@ -124,11 +125,6 @@ int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, s
                 board[head->x - 1][head->y] = HEAD;
 
                 move_body(head, direction);
-                if (cherry_check)
-                {
-                    add_ring(head);
-                    spawn_cherry(head, cherry);
-                }
             }
             break;
         case DOWN:
@@ -143,12 +139,6 @@ int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, s
                 board[head->x + 1][head->y] = HEAD;
 
                 move_body(head, direction);
-
-                if (cherry_check)
-                {
-                    add_ring(head);
-                    spawn_cherry(head, cherry);
-                }
             }
             break;
         case RIGHT:
@@ -163,12 +153,6 @@ int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, s
                 board[head->x][head->y + 1] = HEAD;
 
                 move_body(head, direction);
-
-                if (cherry_check)
-                {
-                    add_ring(head);
-                    spawn_cherry(head, cherry);
-                }
             }
             break;
         case LEFT:
@@ -183,14 +167,15 @@ int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, s
                 board[head->x][head->y - 1] = HEAD;
 
                 move_body(head, direction);
-
-                if (cherry_check)
-                {
-                    add_ring(head);
-                    spawn_cherry(head, cherry);
-                }
             }
             break;
+    }
+
+    if (cherry_check)
+    {
+        add_ring(head);
+        spawn_cherry(head, cherry);
+        increase_score();
     }
 
     return alive;
