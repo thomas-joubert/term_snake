@@ -6,5 +6,9 @@ int score;
 void increase_score(void)
 {
     score++;
+}
+
+void print_score(void)
+{
     printf("Score : %d\n", score);
 }

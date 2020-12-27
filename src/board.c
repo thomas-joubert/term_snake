@@ -62,6 +62,7 @@ void draw_board(int board[BOARD_SIZE][BOARD_SIZE], struct body *head, struct poi
         printf("|\n");
     }
     puts("-------------------");
+    print_score();
 }
 
 void move_body(struct body *head, char direction)
