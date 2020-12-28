@@ -7,5 +7,3 @@ A snake game in you terminal !
 - cd term_snake
 - make -j4
 - ./snake
-
-And enjoy !
