@@ -124,8 +124,6 @@ int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, s
                     return 0;
 
                 board[head->x - 1][head->y] = HEAD;
-
-                move_body(head, direction);
             }
             break;
         case DOWN:
@@ -138,8 +136,6 @@ int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, s
                     return 0;
 
                 board[head->x + 1][head->y] = HEAD;
-
-                move_body(head, direction);
             }
             break;
         case RIGHT:
@@ -152,8 +148,6 @@ int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, s
                     return 0;
 
                 board[head->x][head->y + 1] = HEAD;
-
-                move_body(head, direction);
             }
             break;
         case LEFT:
@@ -166,11 +160,11 @@ int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, s
                     return 0;
 
                 board[head->x][head->y - 1] = HEAD;
-
-                move_body(head, direction);
             }
             break;
     }
+
+    move_body(head, direction);
 
     if (cherry_check)
     {
