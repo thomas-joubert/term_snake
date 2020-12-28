@@ -20,6 +20,8 @@ char get_input(fd_set *fds, char *direction)
     timeout.tv_sec = 0;
     timeout.tv_usec = 400000;
 
+    load_hiscore();
+
     int rdy = select(1, fds, NULL, NULL, &timeout);
 
     if (rdy)
@@ -67,6 +69,8 @@ int main (void)
         return 2;
     }
 
+    load_hiscore();
+
     spawn_cherry(head, cherry);
     draw_board(board, head, cherry);
 
@@ -110,6 +114,8 @@ int main (void)
 
     free_snake(head);
     free(cherry);
+
+    write_hiscore();
 
     return 0;
 }
