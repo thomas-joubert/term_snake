@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <unistd.h>
+#ifndef WIN
 #include <termios.h>
+#endif
 #include <sys/select.h>
 #include <sys/time.h>
 #include <stdlib.h>
@@ -48,14 +50,14 @@ int main (void)
     struct body *head = init_snake(7, 13);
     struct point *cherry = calloc(1, sizeof(struct point));
 
-    struct termios term_options;
-    struct termios term_former;
-
     char direction = 0;
     // The snake is starting with its tail on the left
     char prev_direction = 'q';
     int alive = 1;
 
+#ifndef WIN
+    struct termios term_options;
+    struct termios term_former;
 
     if (tcgetattr(1, &term_options) == -1)
     {
@@ -69,13 +71,14 @@ int main (void)
         return 2;
     }
 
+    term_options.c_lflag &= ~(ICANON|ECHO);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &term_options);
+#endif
+
     load_hiscore();
 
     spawn_cherry(head, cherry);
     draw_board(board, head, cherry);
-
-    term_options.c_lflag &= ~(ICANON|ECHO);
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &term_options);
 
     puts("Welcome to my snake game!");
 
@@ -99,7 +102,9 @@ int main (void)
         else if (direction == ESC)
         {
             puts("\nYou pressed ESC, thanks for playing !");
+#ifndef WIN
             tcsetattr(STDIN_FILENO, TCSANOW, &term_former);
+#endif
             break;
         }
 
