@@ -53,6 +53,8 @@ void write_hiscore(void)
 
     if (score > hiscore)
         fprintf(hiscore_file, "%d\n", score);
+    else
+        fprintf(hiscore_file, "%d\n", hiscore);
 
     fclose(hiscore_file);
 }
