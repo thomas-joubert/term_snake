@@ -6,11 +6,15 @@
 #include <sys/select.h>
 #include <sys/time.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "keyboard.h"
 #include "board.h"
 #include "snake.h"
 #include "score.h"
+
+struct keyboard keyboard =
+    {.UP = 'w', .DOWN = 's', .LEFT = 'a', .RIGHT = 'd', .ESC = 27 };
 
 char get_input(fd_set *fds, char *direction)
 {
@@ -42,38 +46,41 @@ char get_input(fd_set *fds, char *direction)
     return prev_direction;
 }
 
-int main (void)
+int set_termios(struct termios* options, struct termios *former)
+{
+    if (tcgetattr(1, options) == -1)
+    {
+        perror("Fetching terminal data failed");
+        return 0;
+    }
+
+    if (tcgetattr(1, former) == -1)
+    {
+        perror("Fetching terminal data failed");
+        return 0;
+    }
+
+    options->c_lflag &= ~(ICANON|ECHO);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, options);
+
+    return 1;
+}
+
+int main (int argc, char *argv[])
 {
     fd_set fds;
     int board[BOARD_SIZE][BOARD_SIZE] = { 0 };
 
+    if (argc == 2)
+        keyboard = set_layout(argv[1]);
+
     struct body *head = init_snake(7, 13);
     struct point *cherry = calloc(1, sizeof(struct point));
 
-    char direction = 0;
+    char dir = 0;
     // The snake is starting with its tail on the left
-    char prev_direction = 'q';
+    char prev_dir = 'q';
     int alive = 1;
-
-#ifndef WIN
-    struct termios term_options;
-    struct termios term_former;
-
-    if (tcgetattr(1, &term_options) == -1)
-    {
-        perror("Fetching terminal data failed");
-        return 2;
-    }
-
-    if (tcgetattr(1, &term_former) == -1)
-    {
-        perror("Fetching terminal data failed");
-        return 2;
-    }
-
-    term_options.c_lflag &= ~(ICANON|ECHO);
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &term_options);
-#endif
 
     load_hiscore();
 
@@ -86,25 +93,23 @@ int main (void)
 
     while (1)
     {
-        prev_direction = get_input(&fds, &direction);
+        prev_dir = get_input(&fds, &dir);
 
-        if (direction == UP || direction == DOWN || direction == LEFT || direction == RIGHT)
+        if (dir == keyboard.UP || dir == keyboard.DOWN
+                || dir == keyboard.LEFT || dir == keyboard.RIGHT)
         {
             // prevent from going backward
-            if ((direction == UP && prev_direction == DOWN)
-                    || (direction == DOWN && prev_direction == UP)
-                    || (direction == RIGHT && prev_direction == LEFT)
-                    || (direction == LEFT && prev_direction == RIGHT))
-                direction = prev_direction;
+            if ((dir == keyboard.UP && prev_dir == keyboard.DOWN)
+                    || (dir == keyboard.DOWN && prev_dir == keyboard.UP)
+                    || (dir == keyboard.RIGHT && prev_dir == keyboard.LEFT)
+                    || (dir == keyboard.LEFT && prev_dir == keyboard.RIGHT))
+                dir = prev_dir;
 
-            alive = move(board, direction, head, cherry);
+            alive = move(board, dir, head, cherry);
         }
-        else if (direction == ESC)
+        else if (dir == keyboard.ESC)
         {
             puts("\nYou pressed ESC, thanks for playing !");
-#ifndef WIN
-            tcsetattr(STDIN_FILENO, TCSANOW, &term_former);
-#endif
             break;
         }
 

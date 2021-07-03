@@ -5,6 +5,9 @@
 #include "board.h"
 #include "snake.h"
 #include "score.h"
+#include "keyboard.h"
+
+extern struct keyboard keyboard;
 
 static void reset(int board[BOARD_SIZE][BOARD_SIZE])
 {
@@ -70,25 +73,19 @@ void move_body(struct body *head, char direction)
     int inc_x = 0;
     int inc_y = 0;
 
-    switch (direction)
-    {
-        case UP:
-            inc_x = -1;
-            break;
-        case DOWN:
-            inc_x = 1;
-            break;
-        case LEFT:
-            inc_y = -1;
-            break;
-        case RIGHT:
-            inc_y = 1;
-            break;
-    }
+    if (direction == keyboard.UP)
+        inc_x = -1;
+    else if (direction == keyboard.DOWN)
+        inc_x = 1;
+    else if (direction == keyboard.LEFT)
+        inc_y = -1;
+    else if (direction == keyboard.RIGHT)
+        inc_y = 1;
 
     int x_curr = head->x;
     int y_curr = head->y;
     struct body *curr = head->next;
+
     while(curr)
     {
         int x_tmp = curr->x;
@@ -112,56 +109,45 @@ int move(int board[BOARD_SIZE][BOARD_SIZE], char direction, struct body *head, s
     int alive = 1;
     int cherry_check = 0;
 
-    switch (direction)
+    if (direction == keyboard.UP && (alive = head->x == 0 ? 0 : 1))
     {
-        case UP:
-            if ((alive = head->x == 0 ? 0 : 1))
-            {
-                board[head->x][head->y] = BODY;
-                cherry_check = board[head->x - 1][head->y] == CHERRY;
+        board[head->x][head->y] = BODY;
+        cherry_check = board[head->x - 1][head->y] == CHERRY;
 
-                if (board[head->x - 1][head->y] == BODY)
-                    return 0;
+        if (board[head->x - 1][head->y] == BODY)
+            return 0;
 
-                board[head->x - 1][head->y] = HEAD;
-            }
-            break;
-        case DOWN:
-            if ((alive = head->x == 16 ? 0 : 1))
-            {
-                board[head->x][head->y] = BODY;
-                cherry_check = board[head->x + 1][head->y] == CHERRY;
+        board[head->x - 1][head->y] = HEAD;
+    }
+    else if (direction == keyboard.DOWN && (alive = head->x == 16 ? 0 : 1))
+    {
+        board[head->x][head->y] = BODY;
+        cherry_check = board[head->x + 1][head->y] == CHERRY;
 
-                if (board[head->x + 1][head->y] == BODY)
-                    return 0;
+        if (board[head->x + 1][head->y] == BODY)
+            return 0;
 
-                board[head->x + 1][head->y] = HEAD;
-            }
-            break;
-        case RIGHT:
-            if ((alive = head->y == 16 ? 0 : 1))
-            {
-                board[head->x][head->y] = BODY;
-                cherry_check = board[head->x][head->y + 1] == CHERRY;
+        board[head->x + 1][head->y] = HEAD;
+    }
+    else if (direction == keyboard.RIGHT && (alive = head->y == 16 ? 0 : 1))
+    {
+        board[head->x][head->y] = BODY;
+        cherry_check = board[head->x][head->y + 1] == CHERRY;
 
-                if (board[head->x][head->y + 1] == BODY)
-                    return 0;
+        if (board[head->x][head->y + 1] == BODY)
+            return 0;
 
-                board[head->x][head->y + 1] = HEAD;
-            }
-            break;
-        case LEFT:
-            if ((alive = head->y == 0 ? 0 : 1))
-            {
-                board[head->x][head->y] = BODY;
-                cherry_check = board[head->x][head->y - 1] == CHERRY;
+        board[head->x][head->y + 1] = HEAD;
+    }
+    else if (direction == keyboard.LEFT && (alive = head->y == 0 ? 0 : 1))
+    {
+        board[head->x][head->y] = BODY;
+        cherry_check = board[head->x][head->y - 1] == CHERRY;
 
-                if (board[head->x][head->y - 1] == BODY)
-                    return 0;
+        if (board[head->x][head->y - 1] == BODY)
+            return 0;
 
-                board[head->x][head->y - 1] = HEAD;
-            }
-            break;
+        board[head->x][head->y - 1] = HEAD;
     }
 
     move_body(head, direction);
